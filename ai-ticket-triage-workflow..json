@@ -1,0 +1,120 @@
+{
+  "name": "My workflow 2",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "89eba55f-1ba0-453a-96f7-8af8cd064ddd",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "c6d0a164-b9fb-4f5a-ad14-49cde07a587f",
+      "name": "Webhook",
+      "webhookId": "89eba55f-1ba0-453a-96f7-8af8cd064ddd"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are an advanced enterprise IT support triage machine. \nAnalyze the incoming raw support ticket and extract structural data.\n\nOutput a clean, strict JSON response with these exact keys:\n1. \"Summary\": A single concise sentence detailing the root conflict.\n2. \"Urgency\": Evaluate the severity and assign exactly one tier: \"Low\", \"Medium\", or \"High\".\n3. \"Department\": Route to the correct internal group: \"Technical Support\", \"Billing & Finance\", or \"Account Security\".\n\nTicket to process:\n{{ $json.body.ticket }}\n\nCRITICAL REQUIREMENT: Output ONLY valid, raw JSON. No introductory filler, no markdown blockquotes.",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        208,
+        0
+      ],
+      "id": "ee36b7b2-bbf8-43b7-9891-a16da09421b8",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": "llama-3.3-70b-versatile",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        80,
+        208
+      ],
+      "id": "73f93a40-d6e5-4756-8434-e83e24b545d3",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "LkZgWTe35NyOVWwS",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        480,
+        96
+      ],
+      "id": "7ee8810b-aff3-4db3-909f-0eacf1d4081f",
+      "name": "Respond to Webhook"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "efc33251-74a1-49ba-ad90-832c6f45b16d",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "6618a13a511442dbffa61262246adaf1f01538682ec4e7438ed5af58ee514d90"
+  },
+  "id": "LS9D80IBRoES8HJA",
+  "tags": []
+}
